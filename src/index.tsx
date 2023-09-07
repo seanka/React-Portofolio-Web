@@ -1,29 +1,36 @@
-import { ColorModeScript } from "@chakra-ui/react"
-import * as React from "react"
-import * as ReactDOM from "react-dom/client"
-import { App } from "./App"
-import reportWebVitals from "./reportWebVitals"
-import * as serviceWorker from "./serviceWorker"
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
+import RootLayout from "./layout/RootLayout";
+import HomeScreen from "./screens/HomeScreen";
+import AboutScreen from "./screens/AboutScreen";
+import { navigationPath } from "./constants/navigationPath";
+import { navigationItems } from "./constants/navigationConstant";
 
-const container = document.getElementById("root")
-if (!container) throw new Error('Failed to find the root element');
-const root = ReactDOM.createRoot(container)
+const container = document.getElementById("root") as HTMLElement;
 
-root.render(
-  <React.StrictMode>
-    <ColorModeScript />
-    <App />
-  </React.StrictMode>,
-)
+const routes = createBrowserRouter([
+	{
+		path: "/",
+		element: <RootLayout />,
+		children: navigationItems.map((e) => ({ path: e.path, element: getRoutingElement(e.path) })),
+	},
+]);
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-serviceWorker.unregister()
+function getRoutingElement(path: navigationPath) {
+	switch (path) {
+		case navigationPath.home:
+			return <HomeScreen />;
+		case navigationPath.about:
+			return <AboutScreen />;
+		default:
+			break;
+	}
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
-
+ReactDOM.createRoot(container).render(
+	<React.StrictMode>
+		<RouterProvider router={routes} />
+	</React.StrictMode>
+);
